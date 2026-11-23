@@ -1,0 +1,33 @@
+{
+  "id": "./",
+  "name": "Chiusura Novembre B2B Pro",
+  "short_name": "Novembre Pro",
+  "description": "Fatturato attuale 8.871 €, target mese 12.500 €, giro 64 clienti unici, fido 300 € e strategie di recupero.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090D16",
+  "theme_color": "#090D16",
+  "lang": "it",
+  "dir": "ltr",
+  "categories": [
+    "business",
+    "finance",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

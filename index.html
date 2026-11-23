@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#090D16" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Novembre Pro" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <title>Chiusura Novembre Pro — 8.871 € → 12.500 €</title>
+  <style>
+    :root {
+      --bg: #090D16;
+      --surface: #111827;
+      --surface-2: #192234;
+      --surface-3: #222E46;
+      --border: #2B3954;
+      --text: #F8FAFC;
+      --muted: #94A3B8;
+      --gold: #EAB308;
+      --gold-bg: rgba(234, 179, 8, 0.14);
+      --emerald: #10B981;
+      --emerald-bg: rgba(16, 185, 129, 0.14);
+      --cyan: #06B6D4;
+      --cyan-bg: rgba(6, 182, 212, 0.14);
+      --violet: #A855F7;
+      --violet-bg: rgba(168, 85, 247, 0.14);
+      --rose: #F43F5E;
+      --rose-bg: rgba(244, 63, 94, 0.14);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); max-width: 980px; margin: 0 auto; padding-bottom: 86px; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 40;
+      background: rgba(9, 13, 22, 0.94); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 14px;
+    }
+    .topbar-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .app-title { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+    .pill-live { background: var(--emerald-bg); color: var(--emerald); border: 1px solid rgba(16,185,129,0.4); font-size: 0.68rem; padding: 2px 7px; border-radius: 99px; font-weight: 700; }
+    .top-actions { display: flex; gap: 6px; }
+    button { cursor: pointer; border: none; border-radius: 8px; font-weight: 700; font-size: 0.78rem; padding: 7px 11px; transition: 0.15s; }
+    .btn-ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: var(--rose-bg); color: #FDA4AF; border: 1px solid rgba(244,63,94,0.35); }
+    .btn-gold { background: var(--gold); color: #090D16; }
+    .btn-emerald { background: var(--emerald); color: #04130D; }
+
+    .kpi-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+      margin-top: 10px;
+    }
+    @media (max-width: 680px) { .kpi-strip { grid-template-columns: repeat(2, 1fr); } }
+    .kpi-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 9px 11px;
+    }
+    .kpi-lbl { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+    .kpi-num { font-size: 1.12rem; font-weight: 800; margin-top: 2px; }
+    .kpi-hint { font-size: 0.69rem; color: var(--muted); margin-top: 2px; }
+
+    .fido-bar { height: 5px; background: var(--surface-3); border-radius: 99px; overflow: hidden; margin-top: 5px; }
+    .fido-fill { height: 100%; background: var(--violet); width: 0%; transition: width 0.25s; }
+
+    .container { padding: 14px; }
+
+    .goal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 11px 13px; margin-bottom: 14px; }
+    .goal-head { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; gap: 8px; flex-wrap: wrap; }
+    .goal-track { height: 9px; background: var(--surface-3); border-radius: 99px; overflow: hidden; }
+    .goal-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--emerald)); width: 0%; transition: width 0.25s; }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .extra-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 14px; }
+    .extra-title { font-size: 0.85rem; font-weight: 800; color: var(--gold); margin-bottom: 9px; display: flex; justify-content: space-between; align-items: center; }
+    .extra-grid { display: grid; grid-template-columns: 1fr 1.3fr 0.85fr 0.9fr 0.85fr auto; gap: 7px; }
+    @media (max-width: 760px) {
+      .extra-grid { grid-template-columns: 1fr 1fr; }
+      .extra-grid .span-2 { grid-column: span 2; }
+    }
+    input, select {
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+      border-radius: 8px; padding: 8px 9px; font-size: 0.84rem; width: 100%;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--gold); }
+
+    .day-pills { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 10px; }
+    .pill {
+      background: var(--surface); color: var(--muted); border: 1px solid var(--border);
+      padding: 6px 12px; border-radius: 99px; font-size: 0.8rem; white-space: nowrap;
+    }
+    .pill.active { background: var(--gold); color: #090D16; border-color: var(--gold); }
+
+    .summary-strip {
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 9px 12px; margin-bottom: 10px; font-size: 0.8rem;
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px;
+    }
+
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+    .c-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 11px 12px; display: flex; flex-direction: column; gap: 9px;
+    }
+    .c-card.done { border-color: rgba(16, 185, 129, 0.55); background: linear-gradient(180deg, rgba(16,185,129,0.08), var(--surface)); }
+    .c-card.done.is-fido { border-color: rgba(168, 85, 247, 0.65); background: linear-gradient(180deg, rgba(168,85,247,0.11), var(--surface)); }
+
+    .c-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .c-title-wrap { display: flex; align-items: center; gap: 8px; }
+    .tier-chip { font-size: 0.74rem; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+    .t-A { background: var(--gold-bg); color: var(--gold); border: 1px solid rgba(234,179,8,0.4); }
+    .t-B { background: var(--cyan-bg); color: var(--cyan); border: 1px solid rgba(6,182,212,0.4); }
+    .t-C { background: var(--surface-3); color: #CBD5E1; border: 1px solid var(--border); }
+    .t-EX { background: var(--emerald-bg); color: var(--emerald); border: 1px solid rgba(16,185,129,0.4); }
+
+    .c-name { font-weight: 800; font-size: 0.95rem; }
+    .c-day { font-size: 0.72rem; color: var(--muted); }
+
+    .c-targets {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--surface-2); border-radius: 8px; padding: 6px 9px; font-size: 0.76rem;
+    }
+    .t-adj { font-weight: 800; color: var(--gold); }
+    .t-adj.ok { color: var(--emerald); }
+
+    .c-controls { display: grid; grid-template-columns: 1fr auto auto; gap: 6px; align-items: center; }
+    .pay-toggle {
+      padding: 7px 9px; border-radius: 8px; font-size: 0.74rem; font-weight: 800;
+      background: var(--surface-2); color: var(--muted); border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .pay-toggle.fido-active {
+      background: var(--violet-bg); color: #D8B4FE; border-color: rgba(168,85,247,0.6);
+    }
+    .btn-check {
+      width: 36px; height: 36px; border-radius: 8px; background: var(--surface-2);
+      border: 1px solid var(--border); color: var(--muted); font-size: 1rem;
+    }
+    .c-card.done .btn-check { background: var(--emerald); color: #04130D; border-color: var(--emerald); }
+    .c-card.done.is-fido .btn-check { background: var(--violet); color: #fff; border-color: var(--violet); }
+
+    .strat-hero {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px; margin-bottom: 14px;
+    }
+    .strat-hero h2 { font-size: 1rem; color: var(--gold); margin-bottom: 6px; }
+    .strat-hero p { font-size: 0.83rem; color: var(--muted); line-height: 1.45; }
+
+    .strat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .s-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+    }
+    .s-badge { display: inline-block; font-size: 0.7rem; font-weight: 800; padding: 3px 8px; border-radius: 6px; width: fit-content; }
+    .s-title { font-size: 0.96rem; font-weight: 800; margin-top: 4px; }
+    .s-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
+    .s-metric { background: var(--surface-2); border-radius: 8px; padding: 8px 10px; font-size: 0.8rem; font-weight: 700; }
+    .s-list { font-size: 0.77rem; color: #CBD5E1; padding-left: 16px; line-height: 1.5; }
+
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+      background: rgba(17, 24, 39, 0.96); backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: center; gap: 12px; padding: 9px 14px;
+    }
+    .nav-btn {
+      flex: 1; max-width: 240px; padding: 10px 14px; border-radius: 10px;
+      background: var(--surface-2); color: var(--muted); border: 1px solid var(--border);
+      font-size: 0.84rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .nav-btn.active { background: var(--gold); color: #090D16; border-color: var(--gold); }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="app-title">Novembre B2B Pro <span class="pill-live">8.871 € → 12.500 €</span></div>
+      <div class="top-actions">
+        <button class="btn-ghost" onclick="exportCSV()">CSV</button>
+        <button class="btn-danger" onclick="resetAll()">Reset</button>
+      </div>
+    </div>
+
+    <div class="kpi-strip">
+      <div class="kpi-card">
+        <div class="kpi-lbl">Fatturato Mese Attuale</div>
+        <div class="kpi-num" style="color:var(--emerald)" id="kpiMonthNow">8.871,00 €</div>
+        <div class="kpi-hint" id="kpiRouteAdded">Giro: +0,00 € (Dir: 0 € • Fido: 0 €)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Mancante per 12.500 €</div>
+        <div class="kpi-num" style="color:var(--gold)" id="kpiRemGoal">3.629,00 €</div>
+        <div class="kpi-hint" id="kpiRemSub">Su 64 clienti rimanenti</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Plafond Fido (300 €)</div>
+        <div class="kpi-num" style="color:#D8B4FE" id="kpiFidoRem">300,00 €</div>
+        <div class="kpi-hint" id="kpiFidoUsed">Usato: 0,00 € / 300,00 €</div>
+        <div class="fido-bar"><div class="fido-fill" id="fidoFill"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Stima Chiusura Mese</div>
+        <div class="kpi-num" id="kpiMonthEst">12.551,00 €</div>
+        <div class="kpi-hint" id="kpiVar">Scostamento: 0,00 €</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="goal-box">
+      <div class="goal-head">
+        <span id="goalLabel">Avanzamento Mese: 8.871,00 € / 12.500,00 €</span>
+        <span id="progPct">71.0%</span>
+      </div>
+      <div class="goal-track"><div class="goal-fill" id="progFill"></div></div>
+    </div>
+
+    <!-- SCHEDA 1: GIRO CLIENTI & FIDO -->
+    <div id="view-route" class="view active">
+      <div class="extra-panel">
+        <div class="extra-title">
+          <span>+ Aggiungi Visita Extra Giornaliera</span>
+          <span style="font-size:0.72rem; color:var(--muted); font-weight:600;">Si somma ai 8.871 € verso i 12.500 €</span>
+        </div>
+        <div class="extra-grid">
+          <select id="exDay">
+            <option value="Martedì">Martedì</option>
+            <option value="Mercoledì">Mercoledì</option>
+            <option value="Giovedì">Giovedì</option>
+            <option value="Venerdì">Venerdì</option>
+            <option value="Sabato">Sabato</option>
+          </select>
+          <input type="text" id="exName" placeholder="Nome cliente extra..." />
+          <select id="exTier">
+            <option value="A">Fascia A (100€)</option>
+            <option value="B" selected>Fascia B (50€)</option>
+            <option value="C">Fascia C (25€)</option>
+          </select>
+          <input type="number" id="exAmt" placeholder="Importo €" step="0.01" min="0" />
+          <select id="exPay">
+            <option value="cash">Diretto</option>
+            <option value="fido">Con Fido</option>
+          </select>
+          <button class="btn-emerald span-2" onclick="addExtra()">+ Aggiungi</button>
+        </div>
+      </div>
+
+      <div class="day-pills" id="dayTabs"></div>
+      <div class="summary-strip" id="dayBanner"></div>
+      <div class="cards-grid" id="clientList"></div>
+    </div>
+
+    <!-- SCHEDA 2: STRATEGIE DI RECUPERO -->
+    <div id="view-strategy" class="view">
+      <div class="strat-hero">
+        <h2>Piano Dinamico di Recupero Differenze (8.871 € → 12.500 €)</h2>
+        <p id="stratIntro">Parti da <strong>8.871,00 €</strong> già fatturati su un obiettivo mensile di <strong>12.500,00 €</strong> (gap esatto residuo: <strong>3.629,00 €</strong>). Le strategie qui sotto si aggiornano in tempo reale con incassi, visite extra e uso del fido da 300 €.</p>
+      </div>
+
+      <div class="strat-cards" id="stratCards"></div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="nav-route" onclick="switchView('route')">📋 Giro Clienti (64)</button>
+    <button class="nav-btn" id="nav-strategy" onclick="switchView('strategy')">🎯 Strategie Recupero</button>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    const BASE_CLIENTS = [{"id": 1, "day": "Martedì", "tier": "A", "name": "Anemola", "min": 100, "target": 125}, {"id": 2, "day": "Martedì", "tier": "A", "name": "Melon", "min": 100, "target": 125}, {"id": 3, "day": "Martedì", "tier": "A", "name": "Gml", "min": 100, "target": 125}, {"id": 4, "day": "Martedì", "tier": "B", "name": "Calenda", "min": 50, "target": 70}, {"id": 5, "day": "Martedì", "tier": "B", "name": "Insomnia", "min": 50, "target": 70}, {"id": 6, "day": "Martedì", "tier": "B", "name": "Mastroianni", "min": 50, "target": 70}, {"id": 7, "day": "Martedì", "tier": "B", "name": "Insolito", "min": 50, "target": 70}, {"id": 8, "day": "Martedì", "tier": "B", "name": "Asd soccer", "min": 50, "target": 70}, {"id": 9, "day": "Martedì", "tier": "B", "name": "Sartal", "min": 50, "target": 70}, {"id": 10, "day": "Martedì", "tier": "B", "name": "Nice bar", "min": 50, "target": 70}, {"id": 11, "day": "Martedì", "tier": "B", "name": "Officina dei sapori", "min": 50, "target": 70}, {"id": 12, "day": "Martedì", "tier": "C", "name": "Mario russo", "min": 25, "target": 30}, {"id": 13, "day": "Martedì", "tier": "C", "name": "Arena di helas", "min": 25, "target": 30}, {"id": 14, "day": "Martedì", "tier": "C", "name": "Aurora", "min": 25, "target": 30}, {"id": 15, "day": "Martedì", "tier": "C", "name": "La nuova Caffetteria", "min": 25, "target": 30}, {"id": 16, "day": "Martedì", "tier": "C", "name": "De cristofaro", "min": 25, "target": 30}, {"id": 17, "day": "Mercoledì", "tier": "A", "name": "Tartaglione", "min": 100, "target": 125}, {"id": 18, "day": "Mercoledì", "tier": "A", "name": "Scialla", "min": 100, "target": 125}, {"id": 19, "day": "Mercoledì", "tier": "B", "name": "Circolo Dopo lavoro", "min": 50, "target": 70}, {"id": 20, "day": "Mercoledì", "tier": "B", "name": "Musone", "min": 50, "target": 70}, {"id": 21, "day": "Mercoledì", "tier": "B", "name": "Punto di ristoro", "min": 50, "target": 70}, {"id": 22, "day": "Mercoledì", "tier": "C", "name": "Perla del grano", "min": 25, "target": 30}, {"id": 23, "day": "Mercoledì", "tier": "C", "name": "Cieci", "min": 25, "target": 30}, {"id": 24, "day": "Mercoledì", "tier": "C", "name": "Antica caffetteria", "min": 25, "target": 30}, {"id": 25, "day": "Mercoledì", "tier": "C", "name": "Fermento", "min": 25, "target": 30}, {"id": 26, "day": "Mercoledì", "tier": "C", "name": "Elleffe", "min": 25, "target": 30}, {"id": 27, "day": "Mercoledì", "tier": "C", "name": "Coffe talk", "min": 25, "target": 30}, {"id": 28, "day": "Mercoledì", "tier": "C", "name": "Moretta", "min": 25, "target": 30}, {"id": 29, "day": "Mercoledì", "tier": "C", "name": "Bar k", "min": 25, "target": 30}, {"id": 30, "day": "Mercoledì", "tier": "C", "name": "Pizzicagnolo", "min": 25, "target": 30}, {"id": 31, "day": "Mercoledì", "tier": "C", "name": "Caffè primavera", "min": 25, "target": 30}, {"id": 32, "day": "Giovedì", "tier": "A", "name": "Di Giovanni frutteria", "min": 100, "target": 125}, {"id": 33, "day": "Giovedì", "tier": "B", "name": "Kore", "min": 50, "target": 70}, {"id": 34, "day": "Giovedì", "tier": "B", "name": "Di fuccia", "min": 50, "target": 70}, {"id": 35, "day": "Giovedì", "tier": "B", "name": "Erreggi", "min": 50, "target": 70}, {"id": 36, "day": "Giovedì", "tier": "B", "name": "Smoke shop", "min": 50, "target": 70}, {"id": 37, "day": "Giovedì", "tier": "C", "name": "Vistoso", "min": 25, "target": 30}, {"id": 38, "day": "Giovedì", "tier": "C", "name": "Agenziano Maria", "min": 25, "target": 30}, {"id": 39, "day": "Giovedì", "tier": "C", "name": "Oasi", "min": 25, "target": 30}, {"id": 40, "day": "Giovedì", "tier": "C", "name": "Primo caffe", "min": 25, "target": 30}, {"id": 41, "day": "Giovedì", "tier": "C", "name": "Garofalo", "min": 25, "target": 30}, {"id": 42, "day": "Venerdì", "tier": "A", "name": "Drink and more", "min": 100, "target": 125}, {"id": 43, "day": "Venerdì", "tier": "B", "name": "Marzia caffe", "min": 50, "target": 70}, {"id": 44, "day": "Venerdì", "tier": "B", "name": "La luna", "min": 50, "target": 70}, {"id": 45, "day": "Venerdì", "tier": "B", "name": "Munno nicola", "min": 50, "target": 70}, {"id": 46, "day": "Venerdì", "tier": "B", "name": "Old market", "min": 50, "target": 70}, {"id": 47, "day": "Venerdì", "tier": "B", "name": "Ambrosino", "min": 50, "target": 70}, {"id": 48, "day": "Venerdì", "tier": "B", "name": "Bar brule", "min": 50, "target": 70}, {"id": 49, "day": "Venerdì", "tier": "B", "name": "Coffe break", "min": 50, "target": 70}, {"id": 50, "day": "Venerdì", "tier": "B", "name": "Flii d amico", "min": 50, "target": 70}, {"id": 51, "day": "Venerdì", "tier": "C", "name": "Athena", "min": 25, "target": 30}, {"id": 52, "day": "Venerdì", "tier": "C", "name": "Fisio", "min": 25, "target": 30}, {"id": 53, "day": "Venerdì", "tier": "C", "name": "Le Bon", "min": 25, "target": 30}, {"id": 54, "day": "Venerdì", "tier": "C", "name": "Segreti e bugie", "min": 25, "target": 30}, {"id": 55, "day": "Venerdì", "tier": "C", "name": "Bar la rotonda", "min": 25, "target": 30}, {"id": 56, "day": "Venerdì", "tier": "C", "name": "La rinascita", "min": 25, "target": 30}, {"id": 57, "day": "Venerdì", "tier": "C", "name": "Marzano", "min": 25, "target": 30}, {"id": 58, "day": "Venerdì", "tier": "C", "name": "Borrozzino", "min": 25, "target": 30}, {"id": 59, "day": "Venerdì", "tier": "C", "name": "Tab di santo", "min": 25, "target": 30}, {"id": 60, "day": "Sabato", "tier": "A", "name": "Pimo", "min": 100, "target": 125}, {"id": 61, "day": "Sabato", "tier": "B", "name": "Maudit", "min": 50, "target": 70}, {"id": 62, "day": "Sabato", "tier": "B", "name": "Bar colors", "min": 50, "target": 70}, {"id": 63, "day": "Sabato", "tier": "C", "name": "Mogago", "min": 25, "target": 30}, {"id": 64, "day": "Sabato", "tier": "C", "name": "Fantasia dei dolci", "min": 25, "target": 30}];
+    const STORAGE_KEY = "nov_b2b_pro_8871_12500_v3";
+    const ALREADY_BILLED = 8871;
+    const MONTHLY_GOAL = 12500;
+    const EXACT_REMAINING_GAP = MONTHLY_GOAL - ALREADY_BILLED; // 3629
+    const FIDO_LIMIT = 300;
+    const DAYS = ["Tutti", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
+
+    let state = {
+      activeView: "route",
+      activeDay: "Tutti",
+      records: {},
+      extras: []
+    };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          state = { ...state, ...JSON.parse(saved) };
+        }
+      } catch (e) {}
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function fmt(num) {
+      return num.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    }
+
+    function switchView(view) {
+      state.activeView = view;
+      document.getElementById("view-route").classList.toggle("active", view === "route");
+      document.getElementById("view-strategy").classList.toggle("active", view === "strategy");
+      document.getElementById("nav-route").classList.toggle("active", view === "route");
+      document.getElementById("nav-strategy").classList.toggle("active", view === "strategy");
+      render();
+    }
+
+    function getAllItems() {
+      const base = BASE_CLIENTS.map(c => {
+        const rec = state.records[c.id] || { done: false, actual: "", payMode: "cash" };
+        return {
+          ...c,
+          isExtra: false,
+          done: !!rec.done,
+          actual: rec.actual,
+          payMode: rec.payMode || "cash"
+        };
+      });
+      const ext = state.extras.map(e => ({
+        ...e,
+        isExtra: true,
+        done: true,
+        actual: parseFloat(e.actual) || 0,
+        payMode: e.payMode || "cash"
+      }));
+      return [...base, ...ext];
+    }
+
+    function computeModel() {
+      const items = getAllItems();
+      let routeDoneSum = 0;
+      let cashSum = 0;
+      let fidoSum = 0;
+      let doneCount = 0;
+      let unvisitedWeight = 0;
+      let unvisitedCount = 0;
+
+      items.forEach(item => {
+        if (item.done) {
+          const val = parseFloat(item.actual);
+          const eff = isNaN(val) ? item.target : val;
+          routeDoneSum += eff;
+          if (item.payMode === "fido") fidoSum += eff;
+          else cashSum += eff;
+          doneCount++;
+        } else {
+          unvisitedWeight += item.target;
+          unvisitedCount++;
+        }
+      });
+
+      const currentMonthTotal = ALREADY_BILLED + routeDoneSum;
+      const remainingToMonthlyGoal = Math.max(0, MONTHLY_GOAL - currentMonthTotal);
+      const multiplier = unvisitedWeight > 0 ? (remainingToMonthlyGoal / unvisitedWeight) : 0;
+
+      items.forEach(item => {
+        if (item.done) {
+          const val = parseFloat(item.actual);
+          item.effective = isNaN(val) ? item.target : val;
+          item.dynamicTarget = item.effective;
+        } else {
+          item.dynamicTarget = Math.round(item.target * multiplier * 100) / 100;
+          item.effective = item.dynamicTarget;
+        }
+      });
+
+      const baseDonePlanned = items.filter(i => i.done && !i.isExtra).reduce((s, i) => s + i.target, 0);
+      const variance = routeDoneSum - baseDonePlanned;
+      const fidoRemaining = Math.max(0, FIDO_LIMIT - fidoSum);
+      const fidoOver = Math.max(0, fidoSum - FIDO_LIMIT);
+      const estimatedMonthEnd = currentMonthTotal + (unvisitedCount > 0 ? remainingToMonthlyGoal : 0);
+
+      return {
+        items,
+        routeDoneSum,
+        currentMonthTotal,
+        cashSum,
+        fidoSum,
+        fidoRemaining,
+        fidoOver,
+        doneCount,
+        totalCount: items.length,
+        remainingToMonthlyGoal,
+        unvisitedCount,
+        variance,
+        estimatedMonthEnd
+      };
+    }
+
+    function renderStrategies(plan) {
+      const unvisited = plan.items.filter(i => !i.done);
+      const unvisitedA = unvisited.filter(i => i.tier === "A");
+      const unvisitedB = unvisited.filter(i => i.tier === "B");
+      const unvisitedC = unvisited.filter(i => i.tier === "C");
+
+      const gapToRecover = Math.max(0, -plan.variance);
+      const remGoal = plan.remainingToMonthlyGoal;
+
+      document.getElementById("stratIntro").innerHTML =
+        `Fatturato attuale: <strong>${fmt(plan.currentMonthTotal)}</strong> su <strong>12.500,00 €</strong> ` +
+        `(mancano <strong>${fmt(remGoal)}</strong> su <strong>${plan.unvisitedCount} clienti rimanenti</strong>). ` +
+        (gapToRecover > 0
+          ? `Scostamento negativo rispetto al piano: <strong style="color:var(--rose)">${fmt(gapToRecover)}</strong>. Ecco 4 leve pratiche per recuperarlo:`
+          : `Sei in linea o sopra il piano (<strong style="color:var(--emerald)">+${fmt(Math.max(0, plan.variance))}</strong>). Usa queste leve per consolidare la chiusura a 12.500,00 €.`);
+
+      const fidoAvail = plan.fidoRemaining;
+      const fidoClientsCount = Math.min(unvisitedA.length + unvisitedB.length, Math.floor(fidoAvail / 50));
+      const fidoExamples = [...unvisitedA, ...unvisitedB].slice(0, 4).map(c => `${c.name} (${c.day})`).join(", ") || "Nessun cliente A/B rimanente";
+
+      const upsellA = unvisitedA.length > 0 ? Math.ceil((gapToRecover > 0 ? gapToRecover : 160) / unvisitedA.length) : 0;
+      const listA = unvisitedA.slice(0, 5).map(c => `${c.name} (${c.day})`).join(", ") || "Tutti i clienti A visitati";
+
+      const bNeeded = gapToRecover > 0 ? Math.ceil(gapToRecover / 15) : Math.min(6, unvisitedB.length);
+      const listB = unvisitedB.slice(0, 5).map(c => `${c.name} (${c.day})`).join(", ") || "Tutti i clienti B visitati";
+
+      const extraNeeded50 = Math.ceil((gapToRecover > 0 ? gapToRecover : 150) / 50);
+
+      const cards = [
+        {
+          badge: "LEVA 1 • PLAFOND FIDO 300 €",
+          badgeStyle: "background:var(--violet-bg); color:#D8B4FE; border:1px solid rgba(168,85,247,0.4);",
+          title: fidoAvail > 0 ? `Attiva fino a ${fmt(fidoAvail)} di ordini a fido` : "Plafond fido da 300 € esaurito",
+          desc: fidoAvail > 0
+            ? `Hai ancora ${fmt(fidoAvail)} di fido disponibile che entra subito nel fatturato per arrivare a 12.500,00 €. Utile per chiudere ordini su clienti affidabili con cassa stretta.`
+            : `Hai già impiegato ${fmt(plan.fidoSum)} di fido. Prosegui con incassi diretti o visite extra.`,
+          metric: fidoAvail > 0
+            ? `Potenziale: fino a ${fidoClientsCount} ordini da 50 € = ${fmt(Math.min(fidoAvail, fidoClientsCount * 50))}`
+            : `Fido usato: ${fmt(plan.fidoSum)} / 300,00 €`,
+          bullets: [
+            `Clienti da valutare: ${fidoExamples}`,
+            `Seleziona "💳 FIDO" sulla scheda cliente per conteggiarlo nel fatturato`
+          ]
+        },
+        {
+          badge: "LEVA 2 • SPINTA FASCIA A",
+          badgeStyle: "background:var(--gold-bg); color:var(--gold); border:1px solid rgba(234,179,8,0.4);",
+          title: unvisitedA.length > 0 ? `+${upsellA} € per ordine sui ${unvisitedA.length} clienti A rimasti` : "Fascia A completata",
+          desc: `Spingi cartoni ad alta rotazione sui clienti A per assorbire rapidamente eventuali differenze verso i 12.500,00 €. `,
+          metric: unvisitedA.length > 0
+            ? `Impatto: ${unvisitedA.length} clienti × +${upsellA} € = +${fmt(unvisitedA.length * upsellA)}`
+            : `Tutti gli 8 clienti A sono stati chiusi`,
+          bullets: [
+            `Prossimi clienti A: ${listA}`,
+            `Target medio Fascia A da 125 € a ${125 + upsellA} €`
+          ]
+        },
+        {
+          badge: "LEVA 3 • UPSELL FASCIA B (+15 €)",
+          badgeStyle: "background:var(--cyan-bg); color:var(--cyan); border:1px solid rgba(6,182,212,0.4);",
+          title: `Aumenta di +15 € su ${bNeeded} clienti B`,
+          desc: `Aggiungere una referenza extra da 15 € sui clienti B riequilibra eventuali ordini sotto target della Fascia C.`,
+          metric: `Impatto: ${bNeeded} ordini × +15 € = +${fmt(bNeeded * 15)}`,
+          bullets: [
+            `Clienti B in programma: ${listB}`,
+            `Passaggio da 70 € a 85 € sul singolo ordine`
+          ]
+        },
+        {
+          badge: "LEVA 4 • VISITE EXTRA & FASCIA C",
+          badgeStyle: "background:var(--emerald-bg); color:var(--emerald); border:1px solid rgba(16,185,129,0.4);",
+          title: `Inserisci ${extraNeeded50} visite extra da 50 € (o +10 € su Fascia C)`,
+          desc: `Usa il modulo "+ Aggiungi Visita Extra Giornaliera" per coprire eventuali cali e superare i 12.500,00 € totali.`,
+          metric: `Impatto: ${extraNeeded50} visite extra × 50 € = +${fmt(extraNeeded50 * 50)}`,
+          bullets: [
+            `Giornate con più margine di inserimento: Giovedì e Sabato`,
+            `Oppure +10 € su ${Math.min(unvisitedC.length, 10)} clienti C (+100 €)`
+          ]
+        }
+      ];
+
+      const container = document.getElementById("stratCards");
+      container.innerHTML = "";
+      cards.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "s-card";
+        div.innerHTML = `
+          <div>
+            <span class="s-badge" style="${c.badgeStyle}">${c.badge}</span>
+            <div class="s-title">${c.title}</div>
+            <p class="s-desc" style="margin-top:6px;">${c.desc}</p>
+          </div>
+          <div class="s-metric">${c.metric}</div>
+          <ul class="s-list">
+            ${c.bullets.map(b => `<li>${b}</li>`).join("")}
+          </ul>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function render() {
+      const plan = computeModel();
+
+      document.getElementById("kpiMonthNow").textContent = fmt(plan.currentMonthTotal);
+      document.getElementById("kpiRouteAdded").textContent = `Giro: +${plan.routeDoneSum.toFixed(0)} € (Dir: ${plan.cashSum.toFixed(0)} € • Fido: ${plan.fidoSum.toFixed(0)} €)`;
+      document.getElementById("kpiRemGoal").textContent = fmt(plan.remainingToMonthlyGoal);
+      document.getElementById("kpiRemSub").textContent = plan.unvisitedCount > 0
+        ? `Su ${plan.unvisitedCount} clienti rimanenti`
+        : "Giro completato";
+
+      document.getElementById("kpiFidoRem").textContent = fmt(plan.fidoRemaining);
+      document.getElementById("kpiFidoUsed").textContent = plan.fidoOver > 0
+        ? `Sforato di +${fmt(plan.fidoOver)}!`
+        : `Usato: ${fmt(plan.fidoSum)} / 300,00 €`;
+      document.getElementById("fidoFill").style.width = Math.min(100, (plan.fidoSum / FIDO_LIMIT) * 100) + "%";
+
+      document.getElementById("kpiMonthEst").textContent = fmt(plan.estimatedMonthEnd);
+      const varEl = document.getElementById("kpiVar");
+      varEl.textContent = `Scostamento: ${plan.variance >= 0 ? "+" : ""}${fmt(plan.variance)}`;
+      varEl.style.color = plan.variance >= 0 ? "var(--emerald)" : "var(--rose)";
+
+      const pct = Math.min(100, (plan.currentMonthTotal / MONTHLY_GOAL) * 100);
+      document.getElementById("goalLabel").textContent = `Avanzamento Mese: ${fmt(plan.currentMonthTotal)} / 12.500,00 €`;
+      document.getElementById("progPct").textContent = pct.toFixed(1) + "%";
+      document.getElementById("progFill").style.width = pct + "%";
+
+      const tabsEl = document.getElementById("dayTabs");
+      tabsEl.innerHTML = "";
+      DAYS.forEach(d => {
+        const btn = document.createElement("button");
+        btn.className = "pill" + (state.activeDay === d ? " active" : "");
+        btn.textContent = d;
+        btn.onclick = () => { state.activeDay = d; render(); };
+        tabsEl.appendChild(btn);
+      });
+
+      const filtered = state.activeDay === "Tutti"
+        ? plan.items
+        : plan.items.filter(i => i.day === state.activeDay);
+
+      const dayDone = filtered.filter(i => i.done).reduce((s, i) => s + i.effective, 0);
+      const dayRem = filtered.filter(i => !i.done).reduce((s, i) => s + i.dynamicTarget, 0);
+
+      document.getElementById("dayBanner").innerHTML = `
+        <div><strong>${state.activeDay === "Tutti" ? "Settimana Completa" : state.activeDay}</strong> • ${filtered.length} visite</div>
+        <div>Realizzato: <strong style="color:var(--emerald)">${fmt(dayDone)}</strong> | Residuo: <strong style="color:var(--gold)">${fmt(dayRem)}</strong></div>
+      `;
+
+      const listEl = document.getElementById("clientList");
+      listEl.innerHTML = "";
+
+      filtered.forEach(item => {
+        const card = document.createElement("div");
+        const isFido = item.payMode === "fido";
+        card.className = "c-card" + (item.done ? " done" : "") + (isFido ? " is-fido" : "");
+
+        const chipClass = item.isExtra ? "tier-chip t-EX" : `tier-chip t-${item.tier}`;
+        const chipText = item.isExtra ? "EXTRA" : `Fascia ${item.tier}`;
+
+        const diff = item.dynamicTarget - item.target;
+        const diffLabel = !item.done
+          ? (diff > 0.01 ? ` (+${diff.toFixed(2)} €)` : (diff < -0.01 ? ` (${diff.toFixed(2)} €)` : ""))
+          : "";
+
+        card.innerHTML = `
+          <div class="c-top">
+            <div class="c-title-wrap">
+              <span class="${chipClass}">${chipText}</span>
+              <div>
+                <div class="c-name">${item.name}</div>
+                <div class="c-day">${item.day} • Min ${item.min} € • Piano ${item.target} €</div>
+              </div>
+            </div>
+            ${item.isExtra ? `<button class="btn-danger" style="padding:3px 7px;font-size:0.72rem;" onclick="removeExtra(${item.id})">✕</button>` : ""}
+          </div>
+
+          <div class="c-targets">
+            <span>${item.done ? "Fatturato registrato:" : "Nuovo obiettivo:"}</span>
+            <span class="t-adj ${item.done || diff <= 0 ? 'ok' : ''}">
+              ${item.done ? fmt(item.effective) : fmt(item.dynamicTarget) + diffLabel}
+            </span>
+          </div>
+
+          <div class="c-controls">
+            <input type="number" step="0.01" min="0"
+              placeholder="${item.dynamicTarget.toFixed(2)}"
+              value="${item.done ? item.effective : ''}"
+              onchange="updateAmount(${item.id}, ${item.isExtra}, this.value)" />
+            <button class="pay-toggle ${isFido ? 'fido-active' : ''}"
+              title="Seleziona pagamento con Fido (plafond 300 €)"
+              onclick="togglePayMode(${item.id}, ${item.isExtra}, ${item.dynamicTarget})">
+              ${isFido ? "💳 FIDO" : "💵 Diretto"}
+            </button>
+            ${!item.isExtra
+              ? `<button class="btn-check" title="Conferma visita" onclick="toggleDone(${item.id}, ${item.dynamicTarget})">✓</button>`
+              : `<span style="font-size:0.75rem;color:var(--emerald);font-weight:800;padding:0 6px;">OK</span>`
+            }
+          </div>
+        `;
+        listEl.appendChild(card);
+      });
+
+      renderStrategies(plan);
+    }
+
+    function updateAmount(id, isExtra, val) {
+      const num = parseFloat(val);
+      if (isExtra) {
+        const ex = state.extras.find(e => e.id === id);
+        if (ex) ex.actual = isNaN(num) ? 0 : num;
+      } else {
+        const prev = state.records[id] || { payMode: "cash" };
+        if (val === "" || isNaN(num)) {
+          delete state.records[id];
+        } else {
+          state.records[id] = { done: true, actual: num, payMode: prev.payMode || "cash" };
+        }
+      }
+      saveState();
+      render();
+    }
+
+    function togglePayMode(id, isExtra, suggested) {
+      if (isExtra) {
+        const ex = state.extras.find(e => e.id === id);
+        if (ex) ex.payMode = ex.payMode === "fido" ? "cash" : "fido";
+      } else {
+        const curr = state.records[id];
+        if (!curr) {
+          state.records[id] = { done: true, actual: suggested, payMode: "fido" };
+        } else {
+          curr.payMode = curr.payMode === "fido" ? "cash" : "fido";
+        }
+      }
+      saveState();
+      render();
+    }
+
+    function toggleDone(id, suggested) {
+      const curr = state.records[id];
+      if (curr && curr.done) {
+        delete state.records[id];
+      } else {
+        state.records[id] = {
+          done: true,
+          actual: suggested,
+          payMode: (curr && curr.payMode) ? curr.payMode : "cash"
+        };
+      }
+      saveState();
+      render();
+    }
+
+    function addExtra() {
+      const day = document.getElementById("exDay").value;
+      const name = document.getElementById("exName").value.trim() || "Cliente Extra";
+      const tier = document.getElementById("exTier").value;
+      const payMode = document.getElementById("exPay").value;
+      const minMap = { A: 100, B: 50, C: 25 };
+      const rawAmt = parseFloat(document.getElementById("exAmt").value);
+      const actual = isNaN(rawAmt) ? minMap[tier] : rawAmt;
+
+      state.extras.push({
+        id: Date.now(),
+        day,
+        tier,
+        name,
+        min: minMap[tier],
+        target: minMap[tier],
+        actual,
+        payMode
+      });
+
+      document.getElementById("exName").value = "";
+      document.getElementById("exAmt").value = "";
+      saveState();
+      render();
+    }
+
+    function removeExtra(id) {
+      state.extras = state.extras.filter(e => e.id !== id);
+      saveState();
+      render();
+    }
+
+    function resetAll() {
+      if (confirm("Vuoi azzerare tutti i fatturati del giro, il fido utilizzato e le visite extra (mantenendo la base di 8.871 €)?")) {
+        state.records = {};
+        state.extras = [];
+        saveState();
+        render();
+      }
+    }
+
+    function exportCSV() {
+      const plan = computeModel();
+      let csv = "Giorno;Cliente;Fascia;Tipo;Modalita_Pagamento;Minimo;Target_Base;Importo_Adeguato_o_Reale;Stato\n";
+      plan.items.forEach(i => {
+        const payLabel = i.done ? (i.payMode === "fido" ? "Fido" : "Diretto") : "Da definire";
+        csv += `${i.day};${i.name};${i.tier};${i.isExtra ? 'Extra' : 'Giro'};${payLabel};${i.min};${i.target};${i.effective.toFixed(2).replace('.', ',')};\${i.done ? 'Chiuso' : 'Da visitare'}\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "chiusura_novembre_8871_12500.csv";
+      a.click();
+    }
+
+    loadState();
+    render();
+  </script>
+</body>
+</html>
